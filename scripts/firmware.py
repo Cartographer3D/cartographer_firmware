@@ -1504,6 +1504,12 @@ class Can:
                     elif index > 0 and "[scanner]" in lines[index - 1]:
                         if uuid not in scanner_uuids:  # Avoid duplicates
                             scanner_uuids.append(uuid)
+                    elif index > 0 and "[mcu cartographer]" in lines[index - 1]:
+                        if uuid not in scanner_uuids:  # Avoid duplicates
+                            scanner_uuids.append(uuid)
+                    elif index > 0 and "[cartographer]" in lines[index - 1]:
+                        if uuid not in scanner_uuids:  # Avoid duplicates
+                            scanner_uuids.append(uuid)
                     else:
                         if uuid not in regular_uuids:  # Avoid duplicates
                             regular_uuids.append(uuid)
