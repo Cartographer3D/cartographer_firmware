@@ -2117,8 +2117,8 @@ class RetrieveFirmware:
         self.firmware: Firmware = firmware
         self.branch: str = branch
         self.debug: bool = debug
-        self.tarball_url: str = f"https://api.github.com/repos/Cartographer3D/cartographer_firmware/tarball/{self.branch}"
-        self.temp_dir: str = tempfile.mkdtemp(prefix="cartographer_firmware_")
+        self.tarball_url: str = f"https://api.github.com/repos/Cartographer3D/cartographer-klipper/tarball/{self.branch}"
+        self.temp_dir: str = tempfile.mkdtemp(prefix="cartographer-klipper_")
         self.extracted_dir: Optional[str] = None
 
     def temp_dir_exists(self) -> Optional[str]:
