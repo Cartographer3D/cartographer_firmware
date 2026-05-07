@@ -69,7 +69,7 @@ v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_500K_full_8kib_offset.bin,Cartographe
 v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_500K_lite_8kib_offset.bin,CartographerV4_6.1.0_CAN_500K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,500000,Yes
 v4/firmware/6.1.0/CartographerV4_6.1.0_USB_full_8kib_offset.bin,CartographerV4_6.1.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.1.0,,No
 v4/firmware/6.1.0/CartographerV4_6.1.0_USB_lite_8kib_offset.bin,CartographerV4_6.1.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.1.0,,Yes
-v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,1000000,No
-v4/firmware/6.2.0/CartographerV4_6.2.0_USB_full_8kib_offset.bin,CartographerV4_6.2.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.1.0,,No
-v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,1000000,Yes
-v4/firmware/6.2.0/CartographerV4_6.2.0_USB_lite_8kib_offset.bin,CartographerV4_6.2.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.1.0,,Yes
+v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.2.0,1000000,No
+v4/firmware/6.2.0/CartographerV4_6.2.0_USB_full_8kib_offset.bin,CartographerV4_6.2.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.2.0,,No
+v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.2.0,1000000,Yes
+v4/firmware/6.2.0/CartographerV4_6.2.0_USB_lite_8kib_offset.bin,CartographerV4_6.2.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.2.0,,Yes
