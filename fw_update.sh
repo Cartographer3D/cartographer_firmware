@@ -941,7 +941,17 @@ perform_firmware_flash() {
 
     klipper="${HOME}/klipper"
     klippy="${HOME}/klippy-env/bin/python"
-    flash_can="${klipper}/lib/canboot/flash_can.py"
+    if [[ -f "${klipper}/lib/canboot/flash_can.py" ]]; then
+        flash_can="${klipper}/lib/canboot/flash_can.py"
+    elif [[ -f "${klipper}/lib/katapult/flashtool.py" ]]; then
+        flash_can="${klipper}/lib/katapult/flashtool.py"
+    else
+    echo "Error: Could not find flash_can.py or flashtool.py"
+    echo "Checked:"
+    echo "  ${klipper}/lib/canboot/flash_can.py"
+    echo "  ${klipper}/lib/katapult/flashtool.py"
+    exit 1
+fi
 
     if [[ ! -f "$fw_bin" ]]; then
         printf '%sERROR: Firmware file not found:%s\n%s\n' "$red" "$reset" "$fw_bin"
