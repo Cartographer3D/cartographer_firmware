@@ -15,6 +15,8 @@ readonly _FWU_REPORT_BASE="https://api.cartographer3d.com/report"
 # Populated by gather_cartographer_identity()
 CARTO_SERIAL=""
 CARTO_CANBUS=""
+# Device UUID (V4 API). For USB this is fetched via device_name; for CAN this is often CARTO_CANBUS.
+FWU_DEVICE_UUID=""
 # Which [mcu …] block had canbus_uuid: "cartographer" | "scanner" (empty if unknown)
 CARTO_MCU_SECTION=""
 # From Moonraker object query when on CAN (e.g. 1000000)
@@ -50,6 +52,8 @@ FWU_VER_LATEST=""
 FWU_FW_VERSION_CHOSEN=""
 # Semver parsed from Moonraker mcu object mcu_version (e.g. 6.1.0 from "CARTOGRAPHER V4 6.1.0")
 CURRENTFW=""
+# Operation mode: update_latest | switch_protocol
+FWU_OPERATION=""
 # Diagnostics for probe screen (yes/no and paths)
 FWU_KLIPPY_LOG_FOUND=""
 FWU_KLIPPY_LOG_PATH=""
@@ -385,6 +389,63 @@ query_cartographer_api_v4() {
     return 1
 }
 
+# Fetch full API JSON for V4 by USB device name (stdout: json, return 0 on success)
+fetch_cartographer_api_json_v4() {
+    local device_name="$1"
+    local url tmp code enc
+    [[ -z "$device_name" ]] && return 1
+
+    enc="$(urlencode_path_segment "$device_name")"
+    url="${_API_BASE}/${enc}?update=1"
+    tmp="$(mktemp "${TMPDIR:-/tmp}/fwu.XXXXXX")"
+    code="$(curl -sS -o "$tmp" -w "%{http_code}" --connect-timeout 10 --max-time 25 "$url" 2>/dev/null || echo "000")"
+    if [[ "$code" == "200" ]] && _api_json_looks_like_cartographer "$tmp"; then
+        cat "$tmp"
+        rm -f "$tmp"
+        return 0
+    fi
+    rm -f "$tmp"
+    return 1
+}
+
+# Fetch full API JSON for V4 by UUID (stdout: json, return 0 on success)
+fetch_cartographer_api_json_v4_by_uuid() {
+    local uuid="$1"
+    local url tmp code enc
+    [[ -z "$uuid" ]] && return 1
+
+    enc="$(urlencode_path_segment "$uuid")"
+    url="${_API_UUID_BASE}/${enc}?update=1"
+    tmp="$(mktemp "${TMPDIR:-/tmp}/fwu.XXXXXX")"
+    code="$(curl -sS -o "$tmp" -w "%{http_code}" --connect-timeout 10 --max-time 25 "$url" 2>/dev/null || echo "000")"
+    if [[ "$code" == "200" ]] && _api_json_looks_like_cartographer "$tmp"; then
+        cat "$tmp"
+        rm -f "$tmp"
+        return 0
+    fi
+    rm -f "$tmp"
+    return 1
+}
+
+extract_device_uuid_from_api_json() {
+    local json="$1"
+    [[ -z "$json" ]] && return 1
+    FWU_DEVICE_UUID="$(
+        printf '%s' "$json" | python3 -c '
+import json, sys
+try:
+    j = json.load(sys.stdin)
+    v = j.get("device_uuid") if isinstance(j, dict) else None
+    if isinstance(v, str) and v.strip():
+        print(v.strip())
+except Exception:
+    pass
+' 2>/dev/null
+    )" || true
+    [[ -n "${FWU_DEVICE_UUID:-}" ]] || return 1
+    return 0
+}
+
 # CAN: https://api.cartographer3d.com/q/uuid/<hex>?update=1
 query_cartographer_api_v4_by_uuid() {
     local uuid="$1"
@@ -500,6 +561,7 @@ detect_probe() {
     FWU_CANBUS_FREQUENCY=""
     CURRENTFW=""
     local json devname moon_kind
+    FWU_DEVICE_UUID=""
 
     gather_cartographer_identity
 
@@ -508,6 +570,8 @@ detect_probe() {
         if query_cartographer_api_v4 "$devname"; then
             DETECTED_PROBE="v4"
             FWU_V4_VIA="api_usb"
+            json="$(fetch_cartographer_api_json_v4 "$devname" || true)"
+            extract_device_uuid_from_api_json "$json" || true
             moon_kind="${CARTO_MCU_SECTION:-cartographer}"
             [[ "$moon_kind" != "scanner" && "$moon_kind" != "cartographer" ]] && moon_kind="cartographer"
             json="$(query_moonraker_mcu_object "$moon_kind" || true)"
@@ -521,6 +585,8 @@ detect_probe() {
         if query_cartographer_api_v4_by_uuid "$CARTO_CANBUS"; then
             DETECTED_PROBE="v4"
             FWU_V4_VIA="api_uuid"
+            json="$(fetch_cartographer_api_json_v4_by_uuid "$CARTO_CANBUS" || true)"
+            extract_device_uuid_from_api_json "$json" || true
             moon_kind="${CARTO_MCU_SECTION:-cartographer}"
             [[ "$moon_kind" != "scanner" && "$moon_kind" != "cartographer" ]] && moon_kind="cartographer"
             json="$(query_moonraker_mcu_object "$moon_kind" || true)"
@@ -839,6 +905,148 @@ _fwu_menu_pick_build_type() {
     return 0
 }
 
+_fwu_menu_pick_operation() {
+    local accent reset bold _line
+    if [[ -t 1 ]]; then
+        accent=$(tput setaf 6 2>/dev/null || true)
+        bold=$(tput bold 2>/dev/null || true)
+        reset=$(tput sgr0 2>/dev/null || true)
+    else
+        accent="" bold="" reset=""
+    fi
+
+    while true; do
+        clear 2>/dev/null || true
+        printf '%s%sSelect operation:%s\n\n' "$accent" "$bold" "$reset"
+        printf '%s\n' "  1 - Update Firmware"
+        printf '%s\n' "      Update to the latest firmware for your detected probe/protocol."
+        echo ""
+        printf '%s\n' "  2 - Switch Firmware"
+        printf '%s\n' "      Switch protocols (i.e. USB↔CAN)."
+        echo ""
+        if [[ -r /dev/tty ]]; then
+            read -r -p "Enter choice [1]: " _line </dev/tty || true
+        else
+            read -r -p "Enter choice [1]: " _line || true
+        fi
+        _line="${_line:-1}"
+        _line="$(printf '%s' "$_line" | tr -d '[:space:]')"
+        case "$_line" in
+            2) printf '%s' "switch_protocol"; return 0 ;;
+            1 | *) printf '%s' "update_latest"; return 0 ;;
+        esac
+    done
+}
+
+pick_latest_firmware_noninteractive() {
+    # Uses current DETECTED_PROBE + FWU_PROTOCOL (+ CAN speed) to select latest, then chooses Full/Lite.
+    if ! enumerate_firmware_versions; then
+        return 1
+    fi
+    FWU_FW_VERSION_CHOSEN="${FWU_VER_LATEST}"
+    lookup_firmware_recommendation "$FWU_FW_VERSION_CHOSEN"
+    if [[ "$FWU_REC_NO_MATCH" == 1 ]]; then
+        return 1
+    fi
+    if [[ "$FWU_REC_HAS_FULL" == 1 && "$FWU_REC_HAS_LITE" == 1 ]]; then
+        prompt_full_or_lite || true
+    elif [[ "$FWU_REC_HAS_FULL" == 1 ]]; then
+        FWU_FW_SELECTED_KIND="full"
+        FWU_FW_SELECTED_PATH="${FWU_REC_FULL_PATH}"
+        FWU_FW_SELECTED_FILE="${FWU_REC_FULL_FILE}"
+    elif [[ "$FWU_REC_HAS_LITE" == 1 ]]; then
+        FWU_FW_SELECTED_KIND="lite"
+        FWU_FW_SELECTED_PATH="${FWU_REC_LITE_PATH}"
+        FWU_FW_SELECTED_FILE="${FWU_REC_LITE_FILE}"
+    else
+        return 1
+    fi
+    return 0
+}
+
+switch_v4_to_usb() {
+    local red reset accent bold
+    red=$(tput setaf 1 2>/dev/null || true)
+    accent=$(tput setaf 6 2>/dev/null || true)
+    bold=$(tput bold 2>/dev/null || true)
+    reset=$(tput sgr0 2>/dev/null || true)
+
+    if [[ "${DETECTED_PROBE:-}" != "v4" ]]; then
+        printf '%sERROR:%s switch mode is only for Cartographer V4.\n' "$red" "$reset"
+        return 1
+    fi
+    if [[ "${FWU_PROTOCOL:-}" != "CAN" ]]; then
+        printf '%sERROR:%s CAN→USB switch requires the probe currently on CAN.\n' "$red" "$reset"
+        return 1
+    fi
+    if [[ -z "${CARTO_CANBUS:-}" ]]; then
+        printf '%sERROR:%s missing canbus_uuid; cannot address probe over CAN.\n' "$red" "$reset"
+        return 1
+    fi
+
+    # Let user pick CAN interface (reuse same prompt as recommendation screen does)
+    local _can_in
+    printf '%s\n' "${accent}  Linux CAN network (for flashing tools that use ip link / socketcan).${reset}"
+    printf '%s\n' "  Default is can0; use can1 or can2 if your adapter shows up that way."
+    read -r -p "  CAN interface [can0]: " _can_in || true
+    FWU_CAN_INTERFACE="$(_fwu_normalize_can_if "${_can_in:-}")"
+    printf '%s\n' "  Using CAN interface: ${FWU_CAN_INTERFACE}"
+    echo ""
+
+    local fw_root deploy_dir deploy_bin klipper klippy flash_can uuid_hex
+    fw_root="${_SCRIPT_DIR}/firmware"
+    deploy_dir="${fw_root}/v4/katapult-deployer"
+    deploy_bin="${deploy_dir}/katapult_deployer_v4_USB.bin"
+    if [[ ! -f "$deploy_bin" ]]; then
+        printf '%sERROR:%s missing deployer image: %s\n' "$red" "$reset" "$deploy_bin"
+        return 1
+    fi
+    klipper="${HOME}/klipper"
+    klippy="${HOME}/klippy-env/bin/python"
+    if [[ ! -x "$klippy" ]]; then
+        printf '%sERROR:%s Klipper python not found or not executable at %s\n' "$red" "$reset" "$klippy"
+        return 1
+    fi
+    if [[ -f "${klipper}/lib/canboot/flash_can.py" ]]; then
+        flash_can="${klipper}/lib/canboot/flash_can.py"
+    elif [[ -f "${klipper}/lib/katapult/flashtool.py" ]]; then
+        flash_can="${klipper}/lib/katapult/flashtool.py"
+    else
+        printf '%sERROR:%s could not find flash_can.py or flashtool.py in Klipper.\n' "$red" "$reset"
+        return 1
+    fi
+
+    uuid_hex="$(_fwu_canbus_uuid_for_flash "${CARTO_CANBUS}")"
+    [[ -n "$uuid_hex" ]] || {
+        printf '%sERROR:%s invalid canbus_uuid after normalization.\n' "$red" "$reset"
+        return 1
+    }
+
+    printf '%s%sSwitching V4 to USB ...%s\n' "$accent" "$bold" "$reset"
+    echo "Flashing katapult-deployer (USB) over CAN ..."
+    (cd "$deploy_dir" && "$klippy" "$flash_can" -f "$(basename "$deploy_bin")" -i "${FWU_CAN_INTERFACE}" -u "${uuid_hex}") || {
+        printf '%sERROR:%s flashing katapult-deployer failed.\n' "$red" "$reset"
+        return 1
+    }
+
+    echo ""
+    printf '%s%sIMPORTANT:%s unplug CAN and connect the probe via USB.%s\n' "$red" "$bold" "$reset" "$reset"
+    echo ""
+    read -r -p "Press Enter when the probe is connected on USB... " </dev/tty 2>/dev/null || read -r -p "Press Enter when the probe is connected on USB... " || true
+
+    # Re-detect to refresh serial path and protocol.
+    set +e
+    detect_probe
+    set -e
+    set_fwu_protocol_and_can
+
+    show_probe_detection
+    read -r -p "Press Enter to continue... " </dev/tty 2>/dev/null || read -r -p "Press Enter to continue... " || true
+
+    show_firmware_recommendation
+    return 0
+}
+
 # Bordered "Thank you" only (no report payload)
 _fwu_print_thanks_box_simple() {
     local bold="$1" reset="$2" accent="$3" body="$4"
@@ -921,6 +1129,123 @@ ensure_katapult_clone() {
         echo "Cloning Katapult into ${HOME}/katapult ..."
         git clone https://github.com/Arksine/katapult.git "${HOME}/katapult"
     fi
+}
+
+# Flash V4 katapult-deployer to switch probe to CAN @ 1M.
+# Requires probe connected over USB and a V4 device UUID retrievable via API.
+switch_v4_to_can_1m() {
+    local red reset accent bold
+    red=$(tput setaf 1 2>/dev/null || true)
+    accent=$(tput setaf 6 2>/dev/null || true)
+    bold=$(tput bold 2>/dev/null || true)
+    reset=$(tput sgr0 2>/dev/null || true)
+
+    if [[ "${DETECTED_PROBE:-}" != "v4" ]]; then
+        printf '%sERROR:%s switch mode is only for Cartographer V4.\n' "$red" "$reset"
+        return 1
+    fi
+    if [[ "${FWU_PROTOCOL:-}" != "USB" ]]; then
+        printf '%sERROR:%s switch mode requires the probe connected via USB.\n' "$red" "$reset"
+        printf '%s  (We need USB to enter bootloader and flash the katapult-deployer image.)%s\n' "$red" "$reset"
+        return 1
+    fi
+
+    # Best-effort: use API-captured device UUID; otherwise query again by device_name.
+    if [[ -z "${FWU_DEVICE_UUID:-}" ]]; then
+        local devname api_json
+        devname="$(device_name_from_serial_path "${CARTO_SERIAL:-}")"
+        api_json="$(fetch_cartographer_api_json_v4 "$devname" || true)"
+        extract_device_uuid_from_api_json "$api_json" || true
+    fi
+    if [[ -z "${FWU_DEVICE_UUID:-}" ]]; then
+        printf '%sERROR:%s could not determine device UUID via API.\n' "$red" "$reset"
+        printf '%s  Ensure this USB probe is registered and the host has internet access.%s\n' "$red" "$reset"
+        return 1
+    fi
+
+    printf '%s%sSwitching V4 to CAN (1,000,000) ...%s\n' "$accent" "$bold" "$reset"
+    printf '%s\n' "  Device UUID: ${FWU_DEVICE_UUID}"
+    echo ""
+
+    # Enter bootloader (Katapult USB device should appear)
+    local carto_byid katapult_id klipper klippy flash_can fw_root deploy_dir deploy_bin
+    carto_byid="$(ls /dev/serial/by-id/ 2>/dev/null | grep -i cartographer | head -n 1 || true)"
+    if [[ -z "$carto_byid" ]]; then
+        printf '%sERROR:%s no Cartographer USB device found under /dev/serial/by-id/.\n' "$red" "$reset"
+        return 1
+    fi
+
+    klipper="${HOME}/klipper"
+    klippy="${HOME}/klippy-env/bin/python"
+    if [[ ! -x "$klippy" ]]; then
+        printf '%sERROR:%s Klipper python not found or not executable at %s\n' "$red" "$reset" "$klippy"
+        return 1
+    fi
+    if [[ ! -d "${klipper}/scripts" ]]; then
+        printf '%sERROR:%s missing Klipper scripts directory: %s\n' "$red" "$reset" "${klipper}/scripts"
+        return 1
+    fi
+
+    echo "Entering bootloader via flash_usb ..."
+    (cd "${klipper}/scripts" && "$klippy" -c "import flash_usb as u; u.enter_bootloader('/dev/serial/by-id/${carto_byid}')") || {
+        printf '%sERROR:%s enter_bootloader failed.\n' "$red" "$reset"
+        return 1
+    }
+    echo "Waiting for Katapult device to appear ..."
+    sleep 2
+    katapult_id=""
+    local _i
+    for ((_i = 1; _i <= 15; _i++)); do
+        katapult_id="$(ls /dev/serial/by-id/ 2>/dev/null | grep -i katapult | head -n 1 || true)"
+        [[ -n "$katapult_id" ]] && break
+        sleep 2
+    done
+    if [[ -z "$katapult_id" ]]; then
+        printf '%sERROR:%s no Katapult device in /dev/serial/by-id/ after bootloader (waited ~30s).\n' "$red" "$reset"
+        return 1
+    fi
+
+    fw_root="${_SCRIPT_DIR}/firmware"
+    deploy_dir="${fw_root}/v4/katapult-deployer"
+    deploy_bin="${deploy_dir}/katapult_deployer_v4_CAN_1M.bin"
+    if [[ ! -f "$deploy_bin" ]]; then
+        printf '%sERROR:%s missing deployer image: %s\n' "$red" "$reset" "$deploy_bin"
+        return 1
+    fi
+
+    if [[ -f "${klipper}/lib/canboot/flash_can.py" ]]; then
+        flash_can="${klipper}/lib/canboot/flash_can.py"
+    elif [[ -f "${klipper}/lib/katapult/flashtool.py" ]]; then
+        flash_can="${klipper}/lib/katapult/flashtool.py"
+    else
+        printf '%sERROR:%s could not find flash_can.py or flashtool.py in Klipper.\n' "$red" "$reset"
+        return 1
+    fi
+
+    ensure_katapult_clone
+
+    echo "Flashing katapult-deployer (CAN @ 1M) via Katapult USB ..."
+    (cd "$deploy_dir" && "$klippy" "$flash_can" -f "$(basename "$deploy_bin")" -d "/dev/serial/by-id/${katapult_id}") || {
+        printf '%sERROR:%s flashing katapult-deployer failed.\n' "$red" "$reset"
+        return 1
+    }
+
+    echo ""
+    printf '%s%sIMPORTANT:%s unplug the USB probe and reinstall it in CAN mode.%s\n' "$red" "$bold" "$reset" "$reset"
+    printf '%s\n' "Then continue to select the firmware you want to flash over CAN."
+    echo ""
+    read -r -p "Press Enter when the probe is connected on CAN... " </dev/tty 2>/dev/null || read -r -p "Press Enter when the probe is connected on CAN... " || true
+
+    # Switch context so we can reuse CSV/version selection for CAN @ 1M
+    FWU_PROTOCOL="CAN"
+    FWU_CAN_SPEED="1000000"
+    FWU_CAN_SPEED_ASSUMED="no"
+    CARTO_CANBUS="${FWU_DEVICE_UUID}"
+    FWU_CAN_INTERFACE="can0"
+
+    # Let user select CAN interface and firmware version/build using existing UI
+    show_firmware_recommendation
+    return 0
 }
 
 # Flash selected .bin via Klipper flash_can.py (USB: enter bootloader first)
@@ -1640,8 +1965,12 @@ show_thanks_and_optional_stats() {
 }
 
 main() {
+    # Optional argument: --switch-v4-can (integrated replacement for v4_switch.sh)
+    local _mode="${1:-}"
     show_welcome
     read -r -p "Press Enter to continue... "
+
+    FWU_OPERATION="$(_fwu_menu_pick_operation)"
 
     set +e
     detect_probe
@@ -1652,7 +1981,49 @@ main() {
     show_probe_detection
     read -r -p "Press Enter to continue... "
 
-    show_firmware_recommendation
+    # Back-compat: flag still works, but prefer menu.
+    if [[ "${_mode:-}" == "--switch-v4-can" ]]; then
+        set +e
+        switch_v4_to_can_1m
+        set -e
+    else
+        case "${FWU_OPERATION:-update_latest}" in
+            switch_protocol)
+                if [[ "${DETECTED_PROBE:-}" == "v4" && "${FWU_PROTOCOL:-}" == "USB" ]]; then
+                    set +e
+                    switch_v4_to_can_1m
+                    set -e
+                elif [[ "${DETECTED_PROBE:-}" == "v4" && "${FWU_PROTOCOL:-}" == "CAN" ]]; then
+                    set +e
+                    switch_v4_to_usb
+                    set -e
+                else
+                    printf '%s\n' "Switch Firmware is currently implemented for V4 USB↔CAN only."
+                    printf '%s\n' "Falling back to Update Firmware."
+                    show_firmware_recommendation
+                fi
+                ;;
+            update_latest|*)
+                # For CAN, we still need the CAN interface selection prompt.
+                if [[ "${FWU_PROTOCOL:-}" == "CAN" ]]; then
+                    local _can_in
+                    printf '%s\n' "  Linux CAN network (for flashing tools that use ip link / socketcan)."
+                    printf '%s\n' "  Default is can0; use can1 or can2 if your adapter shows up that way."
+                    read -r -p "  CAN interface [can0]: " _can_in || true
+                    FWU_CAN_INTERFACE="$(_fwu_normalize_can_if "${_can_in:-}")"
+                    printf '%s\n' "  Using CAN interface: ${FWU_CAN_INTERFACE}"
+                    echo ""
+                fi
+                # Pick latest automatically but still show the recommendation screen (no version menu).
+                if pick_latest_firmware_noninteractive; then
+                    show_flash_selection_summary
+                else
+                    # Fallback to full interactive picker if something didn't match.
+                    show_firmware_recommendation
+                fi
+                ;;
+        esac
+    fi
     read -r -p "Press Enter to continue... "
 
     if [[ -n "${FWU_FW_SELECTED_PATH:-}" ]]; then
