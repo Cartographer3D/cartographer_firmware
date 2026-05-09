@@ -1,75 +1,75 @@
-filepath,filename,firmware_type,protocol,process,probe_version,firmware_version,can_speed,is_lite
-v2-v3/combined-firmware/5.0.0/Full_Survey_Cartographer_CAN_1M_5_0_0.bin,Full_Survey_Cartographer_CAN_1M_5_0_0.bin,Cartographer + Katapult,CAN,DFU,v3,5.0.0,1000000,No
-v2-v3/combined-firmware/5.0.0/Full_Survey_Cartographer_CrealityK1_USB_5_0_0.bin,Full_Survey_Cartographer_CrealityK1_USB_5_0_0.bin,Cartographer + Katapult,USB,DFU,v3,5.0.0,,Yes
-v2-v3/combined-firmware/5.0.0/Full_Survey_Cartographer_USB_5_0_0.bin,Full_Survey_Cartographer_USB_5_0_0.bin,Cartographer + Katapult,USB,DFU,v3,5.0.0,,No
-v2-v3/survey/5.0.0/Survey_Cartographer_CAN_1000000_8kib_offset.bin,Survey_Cartographer_CAN_1000000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.0.0,1000000,No
-v2-v3/survey/5.0.0/Survey_Cartographer_CAN_250000_8kib_offset.bin,Survey_Cartographer_CAN_250000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.0.0,250000,No
-v2-v3/survey/5.0.0/Survey_Cartographer_CAN_500000_8kib_offset.bin,Survey_Cartographer_CAN_500000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.0.0,500000,No
-v2-v3/survey/5.0.0/Survey_Cartographer_K1_USB_8kib_offset.bin,Survey_Cartographer_K1_USB_8kib_offset.bin,Cartographer,USB,Update,v3,5.0.0,,Yes
-v2-v3/survey/5.0.0/Survey_Cartographer_USB_8kib_offset.bin,Survey_Cartographer_USB_8kib_offset.bin,Cartographer,USB,Update,v3,5.0.0,,No
-v2-v3/combined-firmware/5.1.0/Full_Survey_Cartographer_CAN_1M_5_1_0.bin,Full_Survey_Cartographer_CAN_1M_5_1_0.bin,Cartographer + Katapult,CAN,DFU,v3,5.1.0,1000000,No
-v2-v3/combined-firmware/5.1.0/Full_Survey_Cartographer_CrealityK1_USB_5_1_0.bin,Full_Survey_Cartographer_CrealityK1_USB_5_1_0.bin,Cartographer + Katapult,USB,DFU,v3,5.1.0,,Yes
-v2-v3/combined-firmware/5.1.0/Full_Survey_Cartographer_USB_5_1_0.bin,Full_Survey_Cartographer_USB_5_1_0.bin,Cartographer + Katapult,USB,DFU,v3,5.1.0,,No
-v2-v3/survey/5.1.0/Survey_Cartographer_CAN_1000000_8kib_offset.bin,Survey_Cartographer_CAN_1000000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.1.0,1000000,No
-v2-v3/survey/5.1.0/Survey_Cartographer_CAN_250000_8kib_offset.bin,Survey_Cartographer_CAN_250000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.1.0,250000,No
-v2-v3/survey/5.1.0/Survey_Cartographer_CAN_500000_8kib_offset.bin,Survey_Cartographer_CAN_500000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.1.0,500000,No
-v2-v3/survey/5.1.0/Survey_Cartographer_K1_USB_8kib_offset.bin,Survey_Cartographer_K1_USB_8kib_offset.bin,Cartographer,USB,Update,v3,5.1.0,,Yes
-v2-v3/survey/5.1.0/Survey_Cartographer_USB_8kib_offset.bin,Survey_Cartographer_USB_8kib_offset.bin,Cartographer,USB,Update,v3,5.1.0,,No
-v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_1M.bin,Katapult_plus_CartographerV3_6.1.0_CAN_1M.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,1000000,No
-v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_1M_lite.bin,Katapult_plus_CartographerV3_6.1.0_CAN_1M_lite.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,1000000,Yes
-v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_250K.bin,Katapult_plus_CartographerV3_6.1.0_CAN_250K.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,250000,No
-v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_250K_lite.bin,Katapult_plus_CartographerV3_6.1.0_CAN_250K_lite.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,250000,Yes
-v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_500K.bin,Katapult_plus_CartographerV3_6.1.0_CAN_500K.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,500000,No
-v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_500K_lite.bin,Katapult_plus_CartographerV3_6.1.0_CAN_500K_lite.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,500000,Yes
-v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_USB.bin,Katapult_plus_CartographerV3_6.1.0_USB.bin,Cartographer + Katapult,USB,DFU,v3,6.1.0,,No
-v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_USB_lite.bin,Katapult_plus_CartographerV3_6.1.0_USB_lite.bin,Cartographer + Katapult,USB,DFU,v3,6.1.0,,Yes
-v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_1M_full_8kib_offset.bin,CartographerV3_6.1.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,1000000,No
-v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_1M_lite_8kib_offset.bin,CartographerV3_6.1.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,1000000,Yes
-v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_250K_full_8kib_offset.bin,CartographerV3_6.1.0_CAN_250K_full_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,250000,No
-v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_250K_lite_8kib_offset.bin,CartographerV3_6.1.0_CAN_250K_lite_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,250000,Yes
-v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_500K_full_8kib_offset.bin,CartographerV3_6.1.0_CAN_500K_full_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,500000,No
-v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_500K_lite_8kib_offset.bin,CartographerV3_6.1.0_CAN_500K_lite_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,500000,Yes
-v2-v3/survey/6.1.0/CartographerV3_6.1.0_USB_full_8kib_offset.bin,CartographerV3_6.1.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v3,6.1.0,,No
-v2-v3/survey/6.1.0/CartographerV3_6.1.0_USB_lite_8kib_offset.bin,CartographerV3_6.1.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v3,6.1.0,,Yes
-v4/combined-firmware/5.1.0/Full_Survey_Cartographer_V4_CAN_1M.bin,Full_Survey_Cartographer_V4_CAN_1M.bin,Cartographer + Katapult,CAN,DFU,v4,5.1.0,1000000,No
-v4/combined-firmware/5.1.0/Full_Survey_Cartographer_V4_USB.bin,Full_Survey_Cartographer_V4_USB.bin,Cartographer + Katapult,USB,DFU,v4,5.1.0,,No
-v4/firmware/5.1.0/Cartographer_V4_CAN_1M_8kib_offset.bin,Cartographer_V4_CAN_1M_8kib_offset.bin,Cartographer,CAN,Update,v4,5.1.0,1000000,No
-v4/firmware/5.1.0/Cartographer_V4_CAN_250K_8kib_offset.bin,Cartographer_V4_CAN_250K_8kib_offset.bin,Cartographer,CAN,Update,v4,5.1.0,250000,No
-v4/firmware/5.1.0/Cartographer_V4_CAN_500K_8kib_offset.bin,Cartographer_V4_CAN_500K_8kib_offset.bin,Cartographer,CAN,Update,v4,5.1.0,500000,No
-v4/firmware/5.1.0/Cartographer_V4_USB_8kib_offset.bin,Cartographer_V4_USB_8kib_offset.bin,Cartographer,USB,Update,v4,5.1.0,,No
-v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_1M.bin,Katapult_plus_CartographerV4_6.0.0__CAN_1M.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,1000000,No
-v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_1M_lite.bin,Katapult_plus_CartographerV4_6.0.0__CAN_1M_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,1000000,Yes
-v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_250K.bin,Katapult_plus_CartographerV4_6.0.0__CAN_250K.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,250000,No
-v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_250K_lite.bin,Katapult_plus_CartographerV4_6.0.0__CAN_250K_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,250000,Yes
-v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_500K.bin,Katapult_plus_CartographerV4_6.0.0__CAN_500K.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,500000,No
-v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_500K_lite.bin,Katapult_plus_CartographerV4_6.0.0__CAN_500K_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,500000,Yes
-v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__USB.bin,Katapult_plus_CartographerV4_6.0.0__USB.bin,Cartographer + Katapult,USB,DFU,v4,6.0.0,,No
-v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__USB_lite.bin,Katapult_plus_CartographerV4_6.0.0__USB_lite.bin,Cartographer + Katapult,USB,DFU,v4,6.0.0,,Yes
-v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.0.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,1000000,No
-v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.0.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,1000000,Yes
-v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_250K_full_8kib_offset.bin,CartographerV4_6.0.0_CAN_250K_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,250000,No
-v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_250K_lite_8kib_offset.bin,CartographerV4_6.0.0_CAN_250K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,250000,Yes
-v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_500K_full_8kib_offset.bin,CartographerV4_6.0.0_CAN_500K_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,500000,No
-v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_500K_lite_8kib_offset.bin,CartographerV4_6.0.0_CAN_500K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,500000,Yes
-v4/firmware/6.0.0/CartographerV4_6.0.0_USB_full_8kib_offset.bin,CartographerV4_6.0.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.0.0,,No
-v4/firmware/6.0.0/CartographerV4_6.0.0_USB_lite_8kib_offset.bin,CartographerV4_6.0.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.0.0,,Yes
-v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_1M.bin,Katapult_plus_CartographerV4_6.1.0_CAN_1M.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,1000000,No
-v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_1M_lite.bin,Katapult_plus_CartographerV4_6.1.0_CAN_1M_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,1000000,Yes
-v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_250K.bin,Katapult_plus_CartographerV4_6.1.0_CAN_250K.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,250000,No
-v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_250K_lite.bin,Katapult_plus_CartographerV4_6.1.0_CAN_250K_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,250000,Yes
-v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_500K.bin,Katapult_plus_CartographerV4_6.1.0_CAN_500K.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,500000,No
-v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_500K_lite.bin,Katapult_plus_CartographerV4_6.1.0_CAN_500K_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,500000,Yes
-v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_USB.bin,Katapult_plus_CartographerV4_6.1.0_USB.bin,Cartographer + Katapult,USB,DFU,v4,6.1.0,,No
-v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_USB_lite.bin,Katapult_plus_CartographerV4_6.1.0_USB_lite.bin,Cartographer + Katapult,USB,DFU,v4,6.1.0,,Yes
-v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.1.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,1000000,No
-v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.1.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,1000000,Yes
-v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_250K_full_8kib_offset.bin,CartographerV4_6.1.0_CAN_250K_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,250000,No
-v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_250K_lite_8kib_offset.bin,CartographerV4_6.1.0_CAN_250K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,250000,Yes
-v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_500K_full_8kib_offset.bin,CartographerV4_6.1.0_CAN_500K_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,500000,No
-v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_500K_lite_8kib_offset.bin,CartographerV4_6.1.0_CAN_500K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,500000,Yes
-v4/firmware/6.1.0/CartographerV4_6.1.0_USB_full_8kib_offset.bin,CartographerV4_6.1.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.1.0,,No
-v4/firmware/6.1.0/CartographerV4_6.1.0_USB_lite_8kib_offset.bin,CartographerV4_6.1.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.1.0,,Yes
-v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.2.0,1000000,No
-v4/firmware/6.2.0/CartographerV4_6.2.0_USB_full_8kib_offset.bin,CartographerV4_6.2.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.2.0,,No
-v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.2.0,1000000,Yes
-v4/firmware/6.2.0/CartographerV4_6.2.0_USB_lite_8kib_offset.bin,CartographerV4_6.2.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.2.0,,Yes
+filepath,filename,firmware_type,protocol,process,probe_version,firmware_version,can_speed,is_lite,min_plugin_version
+v2-v3/combined-firmware/5.0.0/Full_Survey_Cartographer_CAN_1M_5_0_0.bin,Full_Survey_Cartographer_CAN_1M_5_0_0.bin,Cartographer + Katapult,CAN,DFU,v3,5.0.0,1000000,No,
+v2-v3/combined-firmware/5.0.0/Full_Survey_Cartographer_CrealityK1_USB_5_0_0.bin,Full_Survey_Cartographer_CrealityK1_USB_5_0_0.bin,Cartographer + Katapult,USB,DFU,v3,5.0.0,,Yes,
+v2-v3/combined-firmware/5.0.0/Full_Survey_Cartographer_USB_5_0_0.bin,Full_Survey_Cartographer_USB_5_0_0.bin,Cartographer + Katapult,USB,DFU,v3,5.0.0,,No,
+v2-v3/survey/5.0.0/Survey_Cartographer_CAN_1000000_8kib_offset.bin,Survey_Cartographer_CAN_1000000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.0.0,1000000,No,
+v2-v3/survey/5.0.0/Survey_Cartographer_CAN_250000_8kib_offset.bin,Survey_Cartographer_CAN_250000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.0.0,250000,No,
+v2-v3/survey/5.0.0/Survey_Cartographer_CAN_500000_8kib_offset.bin,Survey_Cartographer_CAN_500000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.0.0,500000,No,
+v2-v3/survey/5.0.0/Survey_Cartographer_K1_USB_8kib_offset.bin,Survey_Cartographer_K1_USB_8kib_offset.bin,Cartographer,USB,Update,v3,5.0.0,,Yes,
+v2-v3/survey/5.0.0/Survey_Cartographer_USB_8kib_offset.bin,Survey_Cartographer_USB_8kib_offset.bin,Cartographer,USB,Update,v3,5.0.0,,No,
+v2-v3/combined-firmware/5.1.0/Full_Survey_Cartographer_CAN_1M_5_1_0.bin,Full_Survey_Cartographer_CAN_1M_5_1_0.bin,Cartographer + Katapult,CAN,DFU,v3,5.1.0,1000000,No,
+v2-v3/combined-firmware/5.1.0/Full_Survey_Cartographer_CrealityK1_USB_5_1_0.bin,Full_Survey_Cartographer_CrealityK1_USB_5_1_0.bin,Cartographer + Katapult,USB,DFU,v3,5.1.0,,Yes,
+v2-v3/combined-firmware/5.1.0/Full_Survey_Cartographer_USB_5_1_0.bin,Full_Survey_Cartographer_USB_5_1_0.bin,Cartographer + Katapult,USB,DFU,v3,5.1.0,,No,
+v2-v3/survey/5.1.0/Survey_Cartographer_CAN_1000000_8kib_offset.bin,Survey_Cartographer_CAN_1000000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.1.0,1000000,No,
+v2-v3/survey/5.1.0/Survey_Cartographer_CAN_250000_8kib_offset.bin,Survey_Cartographer_CAN_250000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.1.0,250000,No,
+v2-v3/survey/5.1.0/Survey_Cartographer_CAN_500000_8kib_offset.bin,Survey_Cartographer_CAN_500000_8kib_offset.bin,Cartographer,CAN,Update,v3,5.1.0,500000,No,
+v2-v3/survey/5.1.0/Survey_Cartographer_K1_USB_8kib_offset.bin,Survey_Cartographer_K1_USB_8kib_offset.bin,Cartographer,USB,Update,v3,5.1.0,,Yes,
+v2-v3/survey/5.1.0/Survey_Cartographer_USB_8kib_offset.bin,Survey_Cartographer_USB_8kib_offset.bin,Cartographer,USB,Update,v3,5.1.0,,No,
+v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_1M.bin,Katapult_plus_CartographerV3_6.1.0_CAN_1M.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,1000000,No,
+v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_1M_lite.bin,Katapult_plus_CartographerV3_6.1.0_CAN_1M_lite.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,1000000,Yes,
+v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_250K.bin,Katapult_plus_CartographerV3_6.1.0_CAN_250K.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,250000,No,
+v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_250K_lite.bin,Katapult_plus_CartographerV3_6.1.0_CAN_250K_lite.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,250000,Yes,
+v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_500K.bin,Katapult_plus_CartographerV3_6.1.0_CAN_500K.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,500000,No,
+v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_CAN_500K_lite.bin,Katapult_plus_CartographerV3_6.1.0_CAN_500K_lite.bin,Cartographer + Katapult,CAN,DFU,v3,6.1.0,500000,Yes,
+v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_USB.bin,Katapult_plus_CartographerV3_6.1.0_USB.bin,Cartographer + Katapult,USB,DFU,v3,6.1.0,,No,
+v2-v3/combined-firmware/6.1.0/Katapult_plus_CartographerV3_6.1.0_USB_lite.bin,Katapult_plus_CartographerV3_6.1.0_USB_lite.bin,Cartographer + Katapult,USB,DFU,v3,6.1.0,,Yes,
+v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_1M_full_8kib_offset.bin,CartographerV3_6.1.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,1000000,No,
+v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_1M_lite_8kib_offset.bin,CartographerV3_6.1.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,1000000,Yes,
+v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_250K_full_8kib_offset.bin,CartographerV3_6.1.0_CAN_250K_full_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,250000,No,
+v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_250K_lite_8kib_offset.bin,CartographerV3_6.1.0_CAN_250K_lite_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,250000,Yes,
+v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_500K_full_8kib_offset.bin,CartographerV3_6.1.0_CAN_500K_full_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,500000,No,
+v2-v3/survey/6.1.0/CartographerV3_6.1.0_CAN_500K_lite_8kib_offset.bin,CartographerV3_6.1.0_CAN_500K_lite_8kib_offset.bin,Cartographer,CAN,Update,v3,6.1.0,500000,Yes,
+v2-v3/survey/6.1.0/CartographerV3_6.1.0_USB_full_8kib_offset.bin,CartographerV3_6.1.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v3,6.1.0,,No,
+v2-v3/survey/6.1.0/CartographerV3_6.1.0_USB_lite_8kib_offset.bin,CartographerV3_6.1.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v3,6.1.0,,Yes,
+v4/combined-firmware/5.1.0/Full_Survey_Cartographer_V4_CAN_1M.bin,Full_Survey_Cartographer_V4_CAN_1M.bin,Cartographer + Katapult,CAN,DFU,v4,5.1.0,1000000,No,
+v4/combined-firmware/5.1.0/Full_Survey_Cartographer_V4_USB.bin,Full_Survey_Cartographer_V4_USB.bin,Cartographer + Katapult,USB,DFU,v4,5.1.0,,No,
+v4/firmware/5.1.0/Cartographer_V4_CAN_1M_8kib_offset.bin,Cartographer_V4_CAN_1M_8kib_offset.bin,Cartographer,CAN,Update,v4,5.1.0,1000000,No,
+v4/firmware/5.1.0/Cartographer_V4_CAN_250K_8kib_offset.bin,Cartographer_V4_CAN_250K_8kib_offset.bin,Cartographer,CAN,Update,v4,5.1.0,250000,No,
+v4/firmware/5.1.0/Cartographer_V4_CAN_500K_8kib_offset.bin,Cartographer_V4_CAN_500K_8kib_offset.bin,Cartographer,CAN,Update,v4,5.1.0,500000,No,
+v4/firmware/5.1.0/Cartographer_V4_USB_8kib_offset.bin,Cartographer_V4_USB_8kib_offset.bin,Cartographer,USB,Update,v4,5.1.0,,No,
+v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_1M.bin,Katapult_plus_CartographerV4_6.0.0__CAN_1M.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,1000000,No,
+v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_1M_lite.bin,Katapult_plus_CartographerV4_6.0.0__CAN_1M_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,1000000,Yes,
+v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_250K.bin,Katapult_plus_CartographerV4_6.0.0__CAN_250K.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,250000,No,
+v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_250K_lite.bin,Katapult_plus_CartographerV4_6.0.0__CAN_250K_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,250000,Yes,
+v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_500K.bin,Katapult_plus_CartographerV4_6.0.0__CAN_500K.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,500000,No,
+v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__CAN_500K_lite.bin,Katapult_plus_CartographerV4_6.0.0__CAN_500K_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.0.0,500000,Yes,
+v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__USB.bin,Katapult_plus_CartographerV4_6.0.0__USB.bin,Cartographer + Katapult,USB,DFU,v4,6.0.0,,No,
+v4/combined-firmware/6.0.0/Katapult_plus_CartographerV4_6.0.0__USB_lite.bin,Katapult_plus_CartographerV4_6.0.0__USB_lite.bin,Cartographer + Katapult,USB,DFU,v4,6.0.0,,Yes,
+v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.0.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,1000000,No,
+v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.0.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,1000000,Yes,
+v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_250K_full_8kib_offset.bin,CartographerV4_6.0.0_CAN_250K_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,250000,No,
+v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_250K_lite_8kib_offset.bin,CartographerV4_6.0.0_CAN_250K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,250000,Yes,
+v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_500K_full_8kib_offset.bin,CartographerV4_6.0.0_CAN_500K_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,500000,No,
+v4/firmware/6.0.0/CartographerV4_6.0.0_CAN_500K_lite_8kib_offset.bin,CartographerV4_6.0.0_CAN_500K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.0.0,500000,Yes,
+v4/firmware/6.0.0/CartographerV4_6.0.0_USB_full_8kib_offset.bin,CartographerV4_6.0.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.0.0,,No,
+v4/firmware/6.0.0/CartographerV4_6.0.0_USB_lite_8kib_offset.bin,CartographerV4_6.0.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.0.0,,Yes,
+v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_1M.bin,Katapult_plus_CartographerV4_6.1.0_CAN_1M.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,1000000,No,
+v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_1M_lite.bin,Katapult_plus_CartographerV4_6.1.0_CAN_1M_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,1000000,Yes,
+v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_250K.bin,Katapult_plus_CartographerV4_6.1.0_CAN_250K.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,250000,No,
+v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_250K_lite.bin,Katapult_plus_CartographerV4_6.1.0_CAN_250K_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,250000,Yes,
+v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_500K.bin,Katapult_plus_CartographerV4_6.1.0_CAN_500K.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,500000,No,
+v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_CAN_500K_lite.bin,Katapult_plus_CartographerV4_6.1.0_CAN_500K_lite.bin,Cartographer + Katapult,CAN,DFU,v4,6.1.0,500000,Yes,
+v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_USB.bin,Katapult_plus_CartographerV4_6.1.0_USB.bin,Cartographer + Katapult,USB,DFU,v4,6.1.0,,No,
+v4/combined-firmware/6.1.0/Katapult_plus_CartographerV4_6.1.0_USB_lite.bin,Katapult_plus_CartographerV4_6.1.0_USB_lite.bin,Cartographer + Katapult,USB,DFU,v4,6.1.0,,Yes,
+v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.1.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,1000000,No,
+v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.1.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,1000000,Yes,
+v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_250K_full_8kib_offset.bin,CartographerV4_6.1.0_CAN_250K_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,250000,No,
+v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_250K_lite_8kib_offset.bin,CartographerV4_6.1.0_CAN_250K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,250000,Yes,
+v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_500K_full_8kib_offset.bin,CartographerV4_6.1.0_CAN_500K_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,500000,No,
+v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_500K_lite_8kib_offset.bin,CartographerV4_6.1.0_CAN_500K_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.1.0,500000,Yes,
+v4/firmware/6.1.0/CartographerV4_6.1.0_USB_full_8kib_offset.bin,CartographerV4_6.1.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.1.0,,No,
+v4/firmware/6.1.0/CartographerV4_6.1.0_USB_lite_8kib_offset.bin,CartographerV4_6.1.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.1.0,,Yes,
+v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,Cartographer,CAN,Update,v4,6.2.0,1000000,No,1.6.0
+v4/firmware/6.2.0/CartographerV4_6.2.0_USB_full_8kib_offset.bin,CartographerV4_6.2.0_USB_full_8kib_offset.bin,Cartographer,USB,Update,v4,6.2.0,,No,1.6.0
+v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,Cartographer,CAN,Update,v4,6.2.0,1000000,Yes,1.6.0
+v4/firmware/6.2.0/CartographerV4_6.2.0_USB_lite_8kib_offset.bin,CartographerV4_6.2.0_USB_lite_8kib_offset.bin,Cartographer,USB,Update,v4,6.2.0,,Yes,1.6.0

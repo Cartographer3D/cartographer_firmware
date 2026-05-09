@@ -55,6 +55,14 @@ FWU_KLIPPY_LOG_FOUND=""
 FWU_KLIPPY_LOG_PATH=""
 FWU_MCU_SECTION_FOUND=""
 FWU_MCU_SECTION_FILES=""
+# ~/klippy-env pip: full suffix e.g. 1.5.3b2.dev1 (detect_cartographer_plugin_version)
+FWU_PLUGIN_VERSION_RAW=""
+# Leading X.Y.Z parsed from RAW for display/compare (matches pip list semantics)
+FWU_PLUGIN_TRIPLET_DISP=""
+# lookup_firmware_recommendation: CSV row existed but min_plugin_version not met
+FWU_REC_PLUGIN_BLOCKED="0"
+FWU_REC_NEED_PLUGIN=""
+FWU_REC_HAVE_PLUGIN=""
 
 # Trim leading/trailing whitespace (bash)
 _str_trim() {
@@ -577,6 +585,137 @@ set_fwu_protocol_and_can() {
     fi
 }
 
+detect_cartographer_plugin_version() {
+    FWU_PLUGIN_VERSION_RAW=""
+    FWU_PLUGIN_TRIPLET_DISP=""
+    local pip_exe="${HOME}/klippy-env/bin/pip"
+    [[ -x "$pip_exe" ]] || return 0
+    local pline raw
+    pline="$("$pip_exe" list 2>/dev/null | grep -i '^cartographer3d-plugin[[:space:]]' | head -1 || true)"
+    [[ -z "$pline" ]] && return 0
+    raw="$(printf '%s\n' "$pline" | awk '{ print $NF }')"
+    [[ -z "$raw" ]] && return 0
+    FWU_PLUGIN_VERSION_RAW="$raw"
+    FWU_PLUGIN_TRIPLET_DISP="$(
+        python3 -c "import re, sys; m = re.match(r'^(\d+\.\d+\.\d+)', sys.argv[1]); print(m.group(1) if m else '')" "$raw"
+    )"
+    return 0
+}
+
+# After user picks FWU_FW_VERSION_CHOSEN: if CSV min_plugin_version is not met, run pip upgrade.
+fwu_maybe_upgrade_plugin_for_chosen_firmware() {
+    local want="${FWU_FW_VERSION_CHOSEN:-}"
+    local csv="${_SCRIPT_DIR}/firmware_list.csv"
+    local can_arg need_line min_ver pip_exe
+
+    [[ -n "$want" ]] || return 0
+    [[ -f "$csv" ]] || return 0
+    if [[ "$DETECTED_PROBE" != v3 && "$DETECTED_PROBE" != v4 ]]; then
+        return 0
+    fi
+    if [[ "$FWU_PROTOCOL" != "CAN" && "$FWU_PROTOCOL" != "USB" ]]; then
+        return 0
+    fi
+
+    can_arg="${FWU_CAN_SPEED:-}"
+    need_line="$(
+        python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$want" "${FWU_PLUGIN_VERSION_RAW:-}" <<'PY'
+import csv
+import re
+import sys
+
+
+def plugin_triplet_from_pip(ver_raw: str):
+    ver_raw = (ver_raw or "").strip()
+    if not ver_raw:
+        return None
+    m = re.match(r"^(\d+)\.(\d+)\.(\d+)", ver_raw)
+    if not m:
+        return None
+    return (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+
+
+def row_min_plugin_tuple(row: dict):
+    s = (row.get("min_plugin_version") or "").strip()
+    if not s:
+        return None
+    parts = s.split(".")
+    try:
+        return tuple(int(p) for p in parts[:3])
+    except ValueError:
+        return None
+
+
+probe, proto, can_speed, csv_path = sys.argv[1:5]
+want_ver = (sys.argv[5] if len(sys.argv) > 5 else "").strip()
+plugin_raw = (sys.argv[6] if len(sys.argv) > 6 else "").strip()
+can_speed = (can_speed or "").strip()
+installed_tp = plugin_triplet_from_pip(plugin_raw)
+
+rows: list = []
+try:
+    with open(csv_path, newline="", encoding="utf-8") as f:
+        rdr = csv.DictReader(f)
+        for row in rdr:
+            if row.get("process", "").strip() != "Update":
+                continue
+            if row.get("firmware_type", "").strip() != "Cartographer":
+                continue
+            if row.get("probe_version", "").strip() != probe:
+                continue
+            if row.get("protocol", "").strip() != proto:
+                continue
+            cs = row.get("can_speed", "").strip()
+            if proto == "CAN":
+                if cs != can_speed:
+                    continue
+            else:
+                if cs:
+                    continue
+            if row.get("firmware_version", "").strip() != want_ver:
+                continue
+            rows.append(row)
+except OSError:
+    print("OK")
+    sys.exit(0)
+
+reqs = [row_min_plugin_tuple(r) for r in rows]
+reqs = [x for x in reqs if x is not None]
+if not reqs:
+    print("OK")
+    sys.exit(0)
+
+strict = max(reqs)
+if installed_tp is not None and installed_tp >= strict:
+    print("OK")
+    sys.exit(0)
+
+print("NEED %d.%d.%d" % strict)
+sys.exit(0)
+PY
+    )"
+
+    [[ "$need_line" == NEED\ * ]] || return 0
+    min_ver="${need_line#NEED }"
+
+    echo ""
+    printf '%s\n' "  Firmware ${want} needs cartographer3d-plugin ${min_ver} or newer (see min_plugin_version in firmware_list.csv)."
+    printf '%s\n' "  Upgrading cartographer3d-plugin in ~/klippy-env now:"
+    printf '%s\n' "    ~/klippy-env/bin/pip install --upgrade cartographer3d-plugin"
+    echo ""
+
+    pip_exe="${HOME}/klippy-env/bin/pip"
+    if [[ ! -x "$pip_exe" ]]; then
+        printf '%s\n' "  ERROR: ${pip_exe} not found or not executable. Install or upgrade the plugin manually, then re-run this script."
+        return 0
+    fi
+    if ! "$pip_exe" install --upgrade cartographer3d-plugin; then
+        printf '%s\n' "  WARNING: pip install failed. Fix the error above or upgrade the plugin manually, then retry."
+    fi
+    detect_cartographer_plugin_version
+    return 0
+}
+
 enumerate_firmware_versions() {
     FWU_VERSIONS_AVAILABLE=""
     FWU_VER_LATEST=""
@@ -659,6 +798,9 @@ lookup_firmware_recommendation() {
     FWU_FW_SELECTED_KIND=""
     FWU_FW_SELECTED_PATH=""
     FWU_FW_SELECTED_FILE=""
+    FWU_REC_PLUGIN_BLOCKED="0"
+    FWU_REC_NEED_PLUGIN=""
+    FWU_REC_HAVE_PLUGIN=""
 
     local csv="${_SCRIPT_DIR}/firmware_list.csv"
     [[ -f "$csv" ]] || return 0
@@ -671,9 +813,11 @@ lookup_firmware_recommendation() {
     fi
 
     local can_arg="${FWU_CAN_SPEED:-}"
+    local plugin_raw="${FWU_PLUGIN_VERSION_RAW:-}"
     # shellcheck disable=SC1090
-    eval "$(python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$want_ver" <<'PY'
+    eval "$(python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$want_ver" "$plugin_raw" <<'PY'
 import csv
+import re
 import shlex
 import sys
 
@@ -698,9 +842,41 @@ def is_lite_row(row: dict) -> bool:
     return v in ("yes", "true", "1", "y")
 
 
+def plugin_triplet_from_pip(ver_raw: str):
+    ver_raw = (ver_raw or "").strip()
+    if not ver_raw:
+        return None
+    m = re.match(r"^(\d+)\.(\d+)\.(\d+)", ver_raw)
+    if not m:
+        return None
+    return (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+
+
+def row_min_plugin_tuple(row: dict):
+    s = (row.get("min_plugin_version") or "").strip()
+    if not s:
+        return None
+    parts = s.split(".")
+    try:
+        return tuple(int(p) for p in parts[:3])
+    except ValueError:
+        return None
+
+
+def row_plugin_ok(installed_tp, row: dict) -> bool:
+    need = row_min_plugin_tuple(row)
+    if need is None:
+        return True
+    if installed_tp is None:
+        return False
+    return installed_tp >= need
+
+
 probe, proto, can_speed, csv_path = sys.argv[1:5]
 want_ver = (sys.argv[5] if len(sys.argv) > 5 else "").strip()
+plugin_raw = (sys.argv[6] if len(sys.argv) > 6 else "").strip()
 can_speed = (can_speed or "").strip()
+installed_tp = plugin_triplet_from_pip(plugin_raw)
 
 rows: list = []
 try:
@@ -732,15 +908,37 @@ if not rows:
     emit("FWU_REC_NO_MATCH", "1")
     sys.exit(0)
 
+rows_compatible = [r for r in rows if row_plugin_ok(installed_tp, r)]
+
 if want_ver:
-    rows = [r for r in rows if r["firmware_version"].strip() == want_ver]
-    if not rows:
+    rw = [r for r in rows if r["firmware_version"].strip() == want_ver]
+    rw_ok = [r for r in rows_compatible if r["firmware_version"].strip() == want_ver]
+    if not rw:
         emit("FWU_REC_NO_MATCH", "1")
         sys.exit(0)
+    if not rw_ok:
+        need_cell = ""
+        for r in rw:
+            mt = row_min_plugin_tuple(r)
+            if mt is not None:
+                need_cell = ".".join(str(x) for x in mt)
+                break
+        have = plugin_raw.strip() if plugin_raw else ""
+        if not have:
+            have = "not detected (install via ~/klippy-env/bin/pip list)"
+        emit("FWU_REC_PLUGIN_BLOCKED", "1")
+        emit("FWU_REC_NEED_PLUGIN", need_cell)
+        emit("FWU_REC_HAVE_PLUGIN", have)
+        emit("FWU_REC_NO_MATCH", "1")
+        sys.exit(0)
+    rows = rw_ok
     best_ver = want_ver
 else:
-    best_ver = max((r["firmware_version"] for r in rows), key=parse_version)
-    rows = [r for r in rows if r["firmware_version"] == best_ver]
+    if not rows_compatible:
+        emit("FWU_REC_NO_MATCH", "1")
+        sys.exit(0)
+    best_ver = max((r["firmware_version"].strip() for r in rows_compatible), key=parse_version)
+    rows = [r for r in rows_compatible if r["firmware_version"].strip() == best_ver]
 
 full_rows = [r for r in rows if not is_lite_row(r)]
 lite_rows = [r for r in rows if is_lite_row(r)]
@@ -1150,6 +1348,18 @@ show_firmware_recommendation() {
     fi
     printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '')" "$reset"
 
+    detect_cartographer_plugin_version
+    if [[ -n "$FWU_PLUGIN_TRIPLET_DISP" ]]; then
+        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" "  Klipper cartographer3d-plugin: ${FWU_PLUGIN_TRIPLET_DISP} (${FWU_PLUGIN_VERSION_RAW})")" "$reset"
+    elif [[ -n "${FWU_PLUGIN_VERSION_RAW:-}" ]]; then
+        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" "  Klipper cartographer3d-plugin: ${FWU_PLUGIN_VERSION_RAW} (could not parse X.Y.Z)")" "$reset"
+    elif [[ -x "${HOME}/klippy-env/bin/pip" ]]; then
+        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '  Klipper cartographer3d-plugin: not listed in ~/klippy-env (upgrade from your plugin source).')" "$reset"
+    else
+        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '  Klipper cartographer3d-plugin: ~/klippy-env/bin/pip not found; detection skipped.')" "$reset"
+    fi
+    printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '')" "$reset"
+
     if ! enumerate_firmware_versions; then
         printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '  No matching firmware rows in firmware_list.csv for this probe and link.')" "$reset"
         printf '%s|%s%s%s%s|%s\n' "$accent" "$accent" "$(printf '%-*s' "$_BOX_INNER" '  Check firmware_list.csv next to this script.')" "$reset" "$accent" "$reset"
@@ -1196,11 +1406,20 @@ show_firmware_recommendation() {
     fi
     FWU_FW_VERSION_CHOSEN="$_ver_in"
 
+    fwu_maybe_upgrade_plugin_for_chosen_firmware
+
     lookup_firmware_recommendation "$FWU_FW_VERSION_CHOSEN"
 
     if [[ "$FWU_REC_NO_MATCH" == 1 ]]; then
         echo ""
-        printf '%s\n' "  No firmware row for version ${FWU_FW_VERSION_CHOSEN}; check firmware_list.csv."
+        if [[ "${FWU_REC_PLUGIN_BLOCKED:-0}" == 1 ]]; then
+            printf '%s\n' "  Firmware ${FWU_FW_VERSION_CHOSEN} still needs cartographer3d-plugin ${FWU_REC_NEED_PLUGIN:-?} or newer (see min_plugin_version in firmware_list.csv)."
+            printf '%s\n' "  Your Klipper env reports: ${FWU_REC_HAVE_PLUGIN:-unknown}"
+            printf '%s\n' "  Try: ~/klippy-env/bin/pip install --upgrade cartographer3d-plugin"
+            printf '%s\n' "  Check: ~/klippy-env/bin/pip list | grep cartographer3d-plugin"
+        else
+            printf '%s\n' "  No firmware row for version ${FWU_FW_VERSION_CHOSEN}; check firmware_list.csv."
+        fi
         echo ""
         return 0
     fi
