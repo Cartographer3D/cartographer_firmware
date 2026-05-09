@@ -904,7 +904,7 @@ _fwu_print_report_summary_plain() {
     printf '%s\n' "  What is not sent: no Klipper config, printer name, location, or account details."
 }
 
-# Hex string for Katapult flashtool.py -u (strip colons/dashes, 0x)
+# Hex string for flash_can.py -u (strip colons/dashes, 0x)
 _fwu_canbus_uuid_for_flash() {
     local u="$1"
     u="${u//:/}"
@@ -923,9 +923,9 @@ ensure_katapult_clone() {
     fi
 }
 
-# Flash selected .bin via Katapult flashtool.py (USB: enter bootloader first)
+# Flash selected .bin via Klipper flash_can.py (USB: enter bootloader first)
 perform_firmware_flash() {
-    local red reset fw_root fw_bin fw_dir fw_name klipper klippy flashtool
+    local red reset fw_root fw_bin fw_dir fw_name klipper klippy flash_can
     red=$(tput setaf 1 2>/dev/null || true)
     reset=$(tput sgr0 2>/dev/null || true)
 
@@ -941,7 +941,17 @@ perform_firmware_flash() {
 
     klipper="${HOME}/klipper"
     klippy="${HOME}/klippy-env/bin/python"
-    flashtool="${HOME}/katapult/scripts/flashtool.py"
+    if [[ -f "${klipper}/lib/canboot/flash_can.py" ]]; then
+        flash_can="${klipper}/lib/canboot/flash_can.py"
+    elif [[ -f "${klipper}/lib/katapult/flashtool.py" ]]; then
+        flash_can="${klipper}/lib/katapult/flashtool.py"
+    else
+    echo "Error: Could not find flash_can.py or flashtool.py"
+    echo "Checked:"
+    echo "  ${klipper}/lib/canboot/flash_can.py"
+    echo "  ${klipper}/lib/katapult/flashtool.py"
+    exit 1
+fi
 
     if [[ ! -f "$fw_bin" ]]; then
         printf '%sERROR: Firmware file not found:%s\n%s\n' "$red" "$reset" "$fw_bin"
@@ -951,11 +961,12 @@ perform_firmware_flash() {
         printf '%sERROR: Klipper Python not found or not executable:%s\n%s\n' "$red" "$reset" "$klippy"
         return 1
     fi
-    ensure_katapult_clone
-    if [[ ! -f "$flashtool" ]]; then
-        printf '%sERROR: Katapult flashtool.py not found:%s\n%s\n' "$red" "$reset" "$flashtool"
+    if [[ ! -f "$flash_can" ]]; then
+        printf '%sERROR: flash_can.py not found:%s\n%s\n' "$red" "$reset" "$flash_can"
         return 1
     fi
+
+    ensure_katapult_clone
 
     if [[ "$FWU_PROTOCOL" == "USB" ]]; then
         local carto katapult_id _i
@@ -986,12 +997,12 @@ perform_firmware_flash() {
             return 1
         fi
         echo "Flashing ${fw_name} via Katapult (${katapult_id}) ..."
-        (cd "$fw_dir" && "$klippy" "$flashtool" -f "$fw_name" -d "/dev/serial/by-id/${katapult_id}") || {
-            printf '%sERROR: flashtool.py failed.%s\n' "$red" "$reset"
+        (cd "$fw_dir" && "$klippy" "$flash_can" -f "$fw_name" -d "/dev/serial/by-id/${katapult_id}") || {
+            printf '%sERROR: flash_can.py failed.%s\n' "$red" "$reset"
             return 1
         }
     elif [[ "$FWU_PROTOCOL" == "CAN" ]]; then
-        # flashtool.py: with NO -d it uses the CAN bus; -u canbus uuid is required.
+        # flash_can.py: with NO -d it uses the CAN bus; -u canbus uuid is required.
         # With -d it uses USB serial to Katapult (probe on CAN may not expose this).
         local katapult_id uuid_hex
         if [[ -n "${CARTO_CANBUS:-}" ]]; then
@@ -1002,22 +1013,22 @@ perform_firmware_flash() {
             fi
             echo "Flashing ${fw_name} over CAN (interface ${FWU_CAN_INTERFACE}, uuid ${uuid_hex}) ..."
             echo "  (CAN probes do not need a Katapult device under /dev/serial/by-id/.)"
-            (cd "$fw_dir" && "$klippy" "$flashtool" -f "$fw_name" -i "${FWU_CAN_INTERFACE}" -u "${uuid_hex}") || {
-                printf '%sERROR: flashtool.py failed.%s\n' "$red" "$reset"
+            (cd "$fw_dir" && "$klippy" "$flash_can" -f "$fw_name" -i "${FWU_CAN_INTERFACE}" -u "${uuid_hex}") || {
+                printf '%sERROR: flash_can.py failed.%s\n' "$red" "$reset"
                 return 1
             }
         else
             katapult_id="$(ls /dev/serial/by-id/ 2>/dev/null | grep -i katapult | head -n 1 || true)"
             if [[ -z "$katapult_id" ]]; then
                 printf '%sERROR: No canbus_uuid in Klipper config and no Katapult USB device in /dev/serial/by-id/.%s\n' "$red" "$reset"
-                printf '%s  For a probe on the CAN bus, ensure canbus_uuid is in printer.cfg so we can use flashtool.py -u.%s\n' "$red" "$reset"
+                printf '%s  For a probe on the CAN bus, ensure canbus_uuid is in printer.cfg so we can use flash_can.py -u.%s\n' "$red" "$reset"
                 printf '%s  Or connect a Katapult USB interface and try again.%s\n' "$red" "$reset"
                 return 1
             fi
             echo "Flashing ${fw_name} via Katapult USB (${katapult_id}) ..."
             echo "  (No canbus_uuid in config; using serial -d mode. CAN interface flag may be ignored.)"
-            (cd "$fw_dir" && "$klippy" "$flashtool" -f "$fw_name" -d "/dev/serial/by-id/${katapult_id}") || {
-                printf '%sERROR: flashtool.py failed.%s\n' "$red" "$reset"
+            (cd "$fw_dir" && "$klippy" "$flash_can" -f "$fw_name" -d "/dev/serial/by-id/${katapult_id}") || {
+                printf '%sERROR: flash_can.py failed.%s\n' "$red" "$reset"
                 return 1
             }
         fi
@@ -1026,7 +1037,7 @@ perform_firmware_flash() {
         return 1
     fi
 
-    echo "flashtool.py finished."
+    echo "flash_can.py finished."
     return 0
 }
 
@@ -1262,7 +1273,7 @@ show_firmware_recommendation() {
     echo ""
 }
 
-# After firmware recommendation: recap selections before flashtool (only when a file was chosen).
+# After firmware recommendation: recap selections before flash_can (only when a file was chosen).
 show_flash_selection_summary() {
     local bold reset accent line _pv _build _fv _from _to red
     case "${DETECTED_PROBE:-unknown}" in
@@ -1647,7 +1658,7 @@ main() {
     if [[ -n "${FWU_FW_SELECTED_PATH:-}" ]]; then
         show_flash_selection_summary
         local _dflash _flash_exit
-        read -r -p "Run Katapult flashtool.py now with the selected firmware? [Y/n] " _dflash || true
+        read -r -p "Run Klipper flash_can.py now with the selected firmware? [Y/n] " _dflash || true
         _dflash="${_dflash:-y}"
         _dflash="$(printf '%s' "$_dflash" | tr '[:upper:]' '[:lower:]')"
         if [[ "$_dflash" != n* ]]; then
