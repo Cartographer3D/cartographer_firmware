@@ -111,6 +111,10 @@ firmware/v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_500K_full_8kib_offset.bin,Ca
 firmware/v4/firmware/6.1.0/CartographerV4_6.1.0_CAN_500K_lite_8kib_offset.bin,CartographerV4_6.1.0_CAN_500K_lite_8kib_offset.bin,.bin,33016,firmware_binary,v4
 firmware/v4/firmware/6.1.0/CartographerV4_6.1.0_USB_full_8kib_offset.bin,CartographerV4_6.1.0_USB_full_8kib_offset.bin,.bin,33880,firmware_binary,v4
 firmware/v4/firmware/6.1.0/CartographerV4_6.1.0_USB_lite_8kib_offset.bin,CartographerV4_6.1.0_USB_lite_8kib_offset.bin,.bin,33880,firmware_binary,v4
+firmware/v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin,.bin,33188,firmware_binary,v4
+firmware/v4/firmware/6.2.0/CartographerV4_6.2.0_USB_full_8kib_offset.bin,CartographerV4_6.2.0_USB_full_8kib_offset.bin,.bin,33932,firmware_binary,v4
+firmware/v4/firmware/6.2.0/CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin,.bin,33188,firmware_binary,v4
+firmware/v4/firmware/6.2.0/CartographerV4_6.2.0_USB_lite_8kib_offset.bin,CartographerV4_6.2.0_USB_lite_8kib_offset.bin,.bin,33932,firmware_binary,v4
 firmware/v4/katapult/Katapult_V4_CAN_1M.bin,Katapult_V4_CAN_1M.bin,.bin,4488,firmware_binary,v4
 firmware/v4/katapult/Katapult_V4_CAN_250K.bin,Katapult_V4_CAN_250K.bin,.bin,4488,firmware_binary,v4
 firmware/v4/katapult/Katapult_V4_CAN_500K.bin,Katapult_V4_CAN_500K.bin,.bin,4488,firmware_binary,v4
