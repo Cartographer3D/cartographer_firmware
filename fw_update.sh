@@ -180,6 +180,7 @@ def parse_blocks(lines):
     canbus = None
     serial = None
     section_for_canbus = None
+    section_for_serial = None
     current_section = None
     in_block = False
     for line in lines:
@@ -206,18 +207,20 @@ def parse_blocks(lines):
         m = re.search(r"serial\s*[:=]\s*(.+)$", raw, re.I)
         if m:
             serial = m.group(1).split("#")[0].strip().strip('"').strip("'")
+            section_for_serial = current_section
             continue
-    return canbus, serial, section_for_canbus
+    return canbus, serial, section_for_canbus, section_for_serial
 
 
 with open(path, "r", errors="replace") as fh:
     lines = fh.readlines()
 
-canbus, serial, section_for_canbus = parse_blocks(lines)
+canbus, serial, section_for_canbus, section_for_serial = parse_blocks(lines)
 if canbus:
     print("CANBUS|" + canbus)
-if section_for_canbus:
-    print("SECTION|" + section_for_canbus)
+section_name = section_for_canbus or section_for_serial
+if section_name:
+    print("SECTION|" + section_name)
 if serial:
     print("SERIAL|" + serial)
 PY
@@ -546,7 +549,7 @@ detect_probe() {
         json="$(query_moonraker_mcu_object "$moon_kind" || true)"
         extract_canbus_frequency "$json" || true
     else
-        json="$(query_moonraker_mcu_object cartographer || true)"
+        json="$(query_moonraker_mcu_object "$moon_kind" || true)"
     fi
 
     extract_current_fw_from_moonraker_json "$json" || true
