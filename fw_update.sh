@@ -738,7 +738,7 @@ enumerate_firmware_versions() {
     fi
     local can_arg="${FWU_CAN_SPEED:-}"
     FWU_VERSIONS_AVAILABLE="$(
-        python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" <<'PY'
+        python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$FWU_USB_BUILD" <<'PY'
 import csv
 import sys
 
@@ -776,6 +776,8 @@ try:
             else:
                 if cs:
                     continue
+            if proto == "USB" and ((row.get("is_lite") or "").strip().lower() in ("yes", "true", "1", "y")) != (sys.argv[5] == "lite"):
+                continue
             rows.append(row)
 except OSError:
     sys.exit(0)
@@ -824,7 +826,7 @@ lookup_firmware_recommendation() {
     local can_arg="${FWU_CAN_SPEED:-}"
     local plugin_raw="${FWU_PLUGIN_VERSION_RAW:-}"
     # shellcheck disable=SC1090
-    eval "$(python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$want_ver" "$plugin_raw" "$KLIPPY_ENV" <<'PY'
+    eval "$(python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$want_ver" "$plugin_raw" "$KLIPPY_ENV" "$FWU_USB_BUILD" <<'PY'
 import csv
 import re
 import shlex
@@ -907,6 +909,8 @@ try:
             else:
                 if cs:
                     continue
+            if proto == "USB" and is_lite_row(row) != (sys.argv[8] == "lite"):
+                continue
             rows.append(row)
 except OSError as e:
     emit("FWU_REC_NO_MATCH", "1")
@@ -972,14 +976,6 @@ else:
     emit("FWU_REC_LITE_FILE", "")
 PY
 )"
-
-    if [[ "$FWU_PROTOCOL" == "USB" ]]; then
-        if [[ "$FWU_USB_BUILD" == lite && "$FWU_REC_HAS_LITE" == 1 ]]; then
-            FWU_REC_HAS_FULL="0"
-        else
-            FWU_REC_HAS_LITE="0"
-        fi
-    fi
 }
 
 # Normalize user input like "1" -> can1, "CAN2" -> can2
