@@ -6,6 +6,15 @@ set -euo pipefail
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+BASEDIR=${HOME}
+KLIPPY_ENV=${HOME}/klippy-env
+FWU_USB_BUILD=full
+if grep -Fqs "ID=buildroot" /etc/os-release; then
+    KLIPPY_ENV=/usr/share/klippy-env
+    BASEDIR=/usr/data
+    FWU_USB_BUILD=lite
+fi
+
 # Inner width between | borders (wider reduces overlap on long paths and messages)
 readonly _BOX_INNER=90
 readonly _API_BASE="https://api.cartographer3d.com/q/device_name"
@@ -80,11 +89,11 @@ _klippy_has_cartographer_section() {
 find_klippy_log() {
     local p
     local -a candidates=(
-        "${HOME}/printer_data/logs/klippy.log"
-        "${HOME}/klipper_logs/klippy.log"
-        "${HOME}/logs/klippy.log"
-        "${HOME}/mainsail_data/logs/klippy.log"
-        "${HOME}/fluidd_data/logs/klippy.log"
+        "${BASEDIR}/printer_data/logs/klippy.log"
+        "${BASEDIR}/klipper_logs/klippy.log"
+        "${BASEDIR}/logs/klippy.log"
+        "${BASEDIR}/mainsail_data/logs/klippy.log"
+        "${BASEDIR}/fluidd_data/logs/klippy.log"
         "${PWD}/klippy.log"
     )
     # Prefer a log that actually contains [mcu cartographer] / [mcu scanner] (avoid unrelated klippy.log)
@@ -100,8 +109,8 @@ find_klippy_log() {
             return 0
         fi
     done
-    if [[ -f "${HOME}/printer_data/config/printer.cfg" ]]; then
-        p="${HOME}/printer_data/logs/klippy.log"
+    if [[ -f "${BASEDIR}/printer_data/config/printer.cfg" ]]; then
+        p="${BASEDIR}/printer_data/logs/klippy.log"
         [[ -f "$p" ]] && {
             printf '%s' "$p"
             return 0
@@ -112,8 +121,8 @@ find_klippy_log() {
             printf '%s' "$p"
             return 0
         }
-    done < <(find "${HOME}" -maxdepth 12 -name 'klippy.log' -type f 2>/dev/null)
-    p="$(find "${HOME}" -maxdepth 12 -name 'klippy.log' -type f 2>/dev/null | head -1)"
+    done < <(find "${BASEDIR}" -maxdepth 12 -name 'klippy.log' -type f 2>/dev/null)
+    p="$(find "${BASEDIR}" -maxdepth 12 -name 'klippy.log' -type f 2>/dev/null | head -1)"
     if [[ -n "$p" ]]; then
         printf '%s' "$p"
         return 0
@@ -125,18 +134,18 @@ find_klippy_log() {
 collect_cartographer_config_files() {
     local f d
     local -a out=()
-    f="${HOME}/printer_data/config/printer.cfg"
+    f="${BASEDIR}/printer_data/config/printer.cfg"
     [[ -f "$f" ]] && out+=("$f")
-    d="${HOME}/printer_data/config/CARTOGRAPHER"
+    d="${BASEDIR}/printer_data/config/CARTOGRAPHER"
     if [[ -d "$d" ]]; then
         for f in "$d"/*.cfg; do
             [[ -f "$f" ]] && out+=("$f")
         done
     fi
     # Simple [include] expansion from printer.cfg
-    if [[ -f "${HOME}/printer_data/config/printer.cfg" ]]; then
+    if [[ -f "${BASEDIR}/printer_data/config/printer.cfg" ]]; then
         local base dir inc
-        base="${HOME}/printer_data/config"
+        base="${BASEDIR}/printer_data/config"
         while IFS= read -r line || [[ -n "$line" ]]; do
             [[ "$line" =~ ^[[:space:]]*\[include[[:space:]]+([^]]+)\] ]] || continue
             inc="${BASH_REMATCH[1]%%#*}"
@@ -150,7 +159,7 @@ collect_cartographer_config_files() {
                 f="$base/$inc"
                 [[ -f "$f" ]] && out+=("$f")
             fi
-        done <"${HOME}/printer_data/config/printer.cfg"
+        done <"${BASEDIR}/printer_data/config/printer.cfg"
     fi
     # De-dupe while preserving order
     printf '%s\n' "${out[@]}" | awk '!seen[$0]++'
@@ -271,7 +280,7 @@ gather_cartographer_identity() {
 
     # If still empty, try printer.cfg alone (non-standard HOME)
     if [[ -z "$CARTO_SERIAL" && -z "$CARTO_CANBUS" ]]; then
-        for f in "${HOME}/printer_data/config/printer.cfg" "${HOME}/klipper_config/printer.cfg"; do
+        for f in "${BASEDIR}/printer_data/config/printer.cfg" "${BASEDIR}/klipper_config/printer.cfg"; do
             if [[ -f "$f" ]]; then
                 parse_cartographer_file "$f"
                 _append_if_mcu_section "$f"
@@ -588,7 +597,7 @@ set_fwu_protocol_and_can() {
 detect_cartographer_plugin_version() {
     FWU_PLUGIN_VERSION_RAW=""
     FWU_PLUGIN_TRIPLET_DISP=""
-    local pip_exe="${HOME}/klippy-env/bin/pip"
+    local pip_exe="${KLIPPY_ENV}/bin/pip"
     [[ -x "$pip_exe" ]] || return 0
     local pline raw
     pline="$("$pip_exe" list 2>/dev/null | grep -i '^cartographer3d-plugin[[:space:]]' | head -1 || true)"
@@ -700,11 +709,11 @@ PY
 
     echo ""
     printf '%s\n' "  Firmware ${want} needs cartographer3d-plugin ${min_ver} or newer (see min_plugin_version in firmware_list.csv)."
-    printf '%s\n' "  Upgrading cartographer3d-plugin in ~/klippy-env now:"
-    printf '%s\n' "    ~/klippy-env/bin/pip install --upgrade cartographer3d-plugin"
+    printf '%s\n' "  Upgrading cartographer3d-plugin in $KLIPPY_ENV now:"
+    printf '%s\n' "    ${KLIPPY_ENV}/bin/pip install --upgrade cartographer3d-plugin"
     echo ""
 
-    pip_exe="${HOME}/klippy-env/bin/pip"
+    pip_exe="${KLIPPY_ENV}/bin/pip"
     if [[ ! -x "$pip_exe" ]]; then
         printf '%s\n' "  ERROR: ${pip_exe} not found or not executable. Install or upgrade the plugin manually, then re-run this script."
         return 0
@@ -729,7 +738,7 @@ enumerate_firmware_versions() {
     fi
     local can_arg="${FWU_CAN_SPEED:-}"
     FWU_VERSIONS_AVAILABLE="$(
-        python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" <<'PY'
+        python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$FWU_USB_BUILD" <<'PY'
 import csv
 import sys
 
@@ -767,6 +776,8 @@ try:
             else:
                 if cs:
                     continue
+            if proto == "USB" and ((row.get("is_lite") or "").strip().lower() in ("yes", "true", "1", "y")) != (sys.argv[5] == "lite"):
+                continue
             rows.append(row)
 except OSError:
     sys.exit(0)
@@ -815,7 +826,7 @@ lookup_firmware_recommendation() {
     local can_arg="${FWU_CAN_SPEED:-}"
     local plugin_raw="${FWU_PLUGIN_VERSION_RAW:-}"
     # shellcheck disable=SC1090
-    eval "$(python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$want_ver" "$plugin_raw" <<'PY'
+    eval "$(python3 - "$DETECTED_PROBE" "$FWU_PROTOCOL" "$can_arg" "$csv" "$want_ver" "$plugin_raw" "$KLIPPY_ENV" "$FWU_USB_BUILD" <<'PY'
 import csv
 import re
 import shlex
@@ -898,6 +909,8 @@ try:
             else:
                 if cs:
                     continue
+            if proto == "USB" and is_lite_row(row) != (sys.argv[8] == "lite"):
+                continue
             rows.append(row)
 except OSError as e:
     emit("FWU_REC_NO_MATCH", "1")
@@ -925,7 +938,7 @@ if want_ver:
                 break
         have = plugin_raw.strip() if plugin_raw else ""
         if not have:
-            have = "not detected (install via ~/klippy-env/bin/pip list)"
+            have = f"not detected (install via {sys.argv[7]}/bin/pip list)"
         emit("FWU_REC_PLUGIN_BLOCKED", "1")
         emit("FWU_REC_NEED_PLUGIN", need_cell)
         emit("FWU_REC_HAVE_PLUGIN", have)
@@ -1115,9 +1128,9 @@ _fwu_canbus_uuid_for_flash() {
 
 # Katapult source (optional reference; clone if missing)
 ensure_katapult_clone() {
-    if [[ ! -d "${HOME}/katapult" ]]; then
-        echo "Cloning Katapult into ${HOME}/katapult ..."
-        git clone https://github.com/Arksine/katapult.git "${HOME}/katapult"
+    if [[ ! -d "${BASEDIR}/katapult" ]]; then
+        echo "Cloning Katapult into ${BASEDIR}/katapult ..."
+        git clone https://github.com/Arksine/katapult.git "${BASEDIR}/katapult"
     fi
 }
 
@@ -1137,8 +1150,8 @@ perform_firmware_flash() {
     fw_dir="$(dirname "$fw_bin")"
     fw_name="$(basename "$fw_bin")"
 
-    klipper="${HOME}/klipper"
-    klippy="${HOME}/klippy-env/bin/python"
+    klipper="${BASEDIR}/klipper"
+    klippy="${KLIPPY_ENV}/bin/python"
     if [[ -f "${klipper}/lib/canboot/flash_can.py" ]]; then
         flash_can="${klipper}/lib/canboot/flash_can.py"
     elif [[ -f "${klipper}/lib/katapult/flashtool.py" ]]; then
@@ -1353,10 +1366,10 @@ show_firmware_recommendation() {
         printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" "  Klipper cartographer3d-plugin: ${FWU_PLUGIN_TRIPLET_DISP} (${FWU_PLUGIN_VERSION_RAW})")" "$reset"
     elif [[ -n "${FWU_PLUGIN_VERSION_RAW:-}" ]]; then
         printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" "  Klipper cartographer3d-plugin: ${FWU_PLUGIN_VERSION_RAW} (could not parse X.Y.Z)")" "$reset"
-    elif [[ -x "${HOME}/klippy-env/bin/pip" ]]; then
-        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '  Klipper cartographer3d-plugin: not listed in ~/klippy-env (upgrade from your plugin source).')" "$reset"
+    elif [[ -x "${KLIPPY_ENV}/bin/pip" ]]; then
+        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" "  Klipper cartographer3d-plugin: not listed in $KLIPPY_ENV (upgrade from your plugin source).")" "$reset"
     else
-        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '  Klipper cartographer3d-plugin: ~/klippy-env/bin/pip not found; detection skipped.')" "$reset"
+        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" "  Klipper cartographer3d-plugin: ${KLIPPY_ENV}/bin/pip not found; detection skipped.")" "$reset"
     fi
     printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '')" "$reset"
 
@@ -1415,8 +1428,8 @@ show_firmware_recommendation() {
         if [[ "${FWU_REC_PLUGIN_BLOCKED:-0}" == 1 ]]; then
             printf '%s\n' "  Firmware ${FWU_FW_VERSION_CHOSEN} still needs cartographer3d-plugin ${FWU_REC_NEED_PLUGIN:-?} or newer (see min_plugin_version in firmware_list.csv)."
             printf '%s\n' "  Your Klipper env reports: ${FWU_REC_HAVE_PLUGIN:-unknown}"
-            printf '%s\n' "  Try: ~/klippy-env/bin/pip install --upgrade cartographer3d-plugin"
-            printf '%s\n' "  Check: ~/klippy-env/bin/pip list | grep cartographer3d-plugin"
+            printf '%s\n' "  Try: ${KLIPPY_ENV}/bin/pip install --upgrade cartographer3d-plugin"
+            printf '%s\n' "  Check: ${KLIPPY_ENV}/bin/pip list | grep cartographer3d-plugin"
         else
             printf '%s\n' "  No firmware row for version ${FWU_FW_VERSION_CHOSEN}; check firmware_list.csv."
         fi
@@ -1619,7 +1632,7 @@ show_probe_detection() {
         printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" "  $(_fwu_trunc "${FWU_KLIPPY_LOG_PATH:-}" $((_BOX_INNER - 2)))")" "$reset"
     else
         printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '  Klippy log: not found')" "$reset"
-        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '  (searched under $HOME, printer_data/logs, ...)')" "$reset"
+        printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '  (searched under $BASEDIR, printer_data/logs, ...)')" "$reset"
     fi
 
     printf '%s|%s|%s\n' "$accent" "$(printf '%-*s' "$_BOX_INNER" '')" "$reset"
