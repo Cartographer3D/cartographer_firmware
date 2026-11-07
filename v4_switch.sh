@@ -134,17 +134,17 @@ echo "  [2] Lite firmware (recommended for weaker MCUs or SBCs)"
 read -p "Enter your choice (1 or 2): " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[2]$ ]]; then
-    FIRMWARE_FILE="CartographerV4_6.0.0_CAN_1M_lite_8kib_offset.bin"
+    FIRMWARE_FILE="CartographerV4_6.2.0_CAN_1M_lite_8kib_offset.bin"
     echo "Lite firmware selected."
 else
-    FIRMWARE_FILE="CartographerV4_6.0.0_CAN_1M_full_8kib_offset.bin"
+    FIRMWARE_FILE="CartographerV4_6.2.0_CAN_1M_full_8kib_offset.bin"
     echo "Full firmware selected."
 fi
 echo ""
 echo "Copy this into your Clipboard and once you have plugged your probe in via CAN run:"
 echo ""
 echo ""
-echo -e "\033[0;32mcd ~/cartographer_firmware/firmware/v4/firmware/6.0.0/\033[0m"
+echo -e "\033[0;32mcd ~/cartographer_firmware/firmware/v4/firmware/6.2.0/\033[0m"
 echo -e "\033[0;32mpython3 ~/katapult/scripts/flashtool.py -i can0 -f $FIRMWARE_FILE -u $DEVICE_UUID\033[0m"
 echo ""
 echo ""You can also run the commands automatically if you are not rebooting the printer.
@@ -159,7 +159,7 @@ if [ -n "$DEVICE_UUID" ]; then
         echo "CAN interface (can0) is up. Checking for device..."
         
         # Try to query the device on CAN
-        cd ~/cartographer_firmware/firmware/v4/firmware/6.0.0/ 2>/dev/null
+        cd ~/cartographer_firmware/firmware/v4/firmware/6.2.0/ 2>/dev/null
         if [ -f "$FIRMWARE_FILE" ]; then
             read -p "Would you like to automatically flash the firmware now? (y/n): " -n 1 -r
             echo ""
